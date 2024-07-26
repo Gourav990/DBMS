@@ -1,0 +1,22 @@
+1)What are the employee names, department numbers, department names, and locations for all departments, including those without employees?
+SELECT e.emname, d.deptno, d.dname, d.loc 
+FROM emp_154 e 
+RIGHT OUTER JOIN dept_class154 d 
+ON e.deptno = d.deptno;
+2)What are the details of all employees where the 'cimm' column is null?
+SELECT * 
+FROM emp_154 
+WHERE cimm IS NULL;
+3)What are the department numbers, average salaries, and employee counts for departments with more than 3 employees?
+SELECT deptno, AVG(sal), COUNT(*) 
+FROM emp_154 
+GROUP BY deptno 
+HAVING COUNT(*) > 3;
+4)What are the employee names and their corresponding manager names?
+SELECT e.name AS employee_name, m.emname AS manager_name 
+FROM emp_154 e 
+LEFT JOIN emp_154 m 
+ON e.mgr = m.emno;
+5)How do you rename the table emp_154 to employee_154?
+ALTER TABLE emp_154 
+RENAME TO employee_154;
