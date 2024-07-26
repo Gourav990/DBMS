@@ -1,0 +1,51 @@
+
+30. Retrieve the department numbers and the total sum of salaries for each department.
+    SQL: SELECT DEPTNO, SUM(SAL) AS TOTAL FROM EMP_154 GROUP BY DEPTNO;
+
+31. Retrieve the job titles and the average salary for each job where the job title is not 'MANAGER'.
+    SQL: SELECT JOB, AVG(SAL) FROM EMP_154 WHERE JOB <> 'MANAGER' GROUP BY JOB;
+
+32. Retrieve the job titles, maximum salary, minimum salary, average salary, and total salary for each job in department 20.
+    SQL: SELECT JOB, MAX(SAL) AS MAX_SAL, MIN(SAL) AS MIN_SAL, AVG(SAL) AS AVG_SAL, SUM(SAL) AS TOTAL FROM EMP_154 WHERE DEPTNO=20 GROUP BY JOB;
+
+33. Retrieve the department numbers, job titles, and average salaries for each combination of department number and job title.
+    SQL: SELECT DEPTNO, JOB, AVG(SAL) AS average_salary FROM EMP_154 GROUP BY DEPTNO, JOB;
+
+34. Retrieve the job titles, maximum salary, minimum salary, average salary, and total salary for each job in department 20, where the average salary is greater than 1000.
+    SQL: SELECT JOB, MAX(SAL) AS MAX_SAL, MIN(SAL) AS MIN_SAL, AVG(SAL) AS AVG_SAL, SUM(SAL) AS TOTAL FROM EMP_154 WHERE DEPTNO=20 GROUP BY JOB HAVING AVG(SAL) > 1000;
+
+35. Retrieve the employee number, employee name, and department number from the 'emp_154' table, and the department name from the 'dept_class154' table.
+    SQL: SELECT e.emno, e.emname, e.deptno, d.dname FROM emp_154 e JOIN dept_class154 d ON e.deptno = d.deptno;
+
+36. Retrieve the department number and department name from the 'dept_class154' table, and the number of employees in each department.
+    SQL: SELECT d.deptno, d.dname, COUNT(e.emno) AS num_employees FROM dept_class154 d LEFT JOIN emp_154 e ON d.deptno = e.deptno GROUP BY d.deptno, d.dname;
+
+37. Retrieve the employee names and their respective manager names.
+    SQL: SELECT e.emname AS employee_name, m.emname AS manager_name FROM emp_154 e LEFT JOIN emp_154 m ON e.mgr = m.emno;
+
+38. Retrieve the employee names and their respective manager names where the employee's hire date is earlier than the manager's hire date.
+    SQL: SELECT e.emname AS employee_name, m.emname AS manager_name FROM emp_154 e LEFT JOIN emp_154 m ON e.mgr = m.emno WHERE e.hiredate < m.hiredate;
+
+39. Retrieve distinct job titles for employees working in department 20 or 30.
+    SQL: SELECT DISTINCT job FROM emp_154 WHERE deptno IN (20, 30);
+
+40. Retrieve the job titles common to employees working in both department 20 and department 30.
+    SQL: SELECT job FROM emp_154 WHERE deptno = 20 INTERSECT SELECT job FROM emp_154 WHERE deptno = 30;
+
+41. Retrieve distinct job titles for employees working in department 20 and exclude job titles that exist in other departments.
+    SQL: SELECT DISTINCT job FROM emp_154 WHERE deptno = 20 AND job NOT IN (SELECT job FROM emp_154 WHERE deptno != 20);
+
+42. Retrieve all details of employees named 'MILLER' and their respective department details.
+    SQL: SELECT e.* FROM emp_154 e JOIN dept_class154 d ON e.deptno = d.deptno WHERE e.emname = 'MILLER';
+
+43. Retrieve the job titles and average salaries for each job, ordered by average salary in descending order.
+    SQL: SELECT job, AVG(sal) AS average_salary FROM emp_154 GROUP BY job ORDER BY average_salary DESC;
+
+44. Retrieve the department name and employee name for employees whose salary is the minimum in their respective department.
+    SQL: SELECT d.dname, e.emname FROM emp_154 e JOIN dept_class154 d ON e.deptno = d.deptno WHERE e.sal = (SELECT MIN(sal) FROM emp_154 WHERE deptno = e.deptno);
+
+45. Retrieve all details of employees whose salary is greater than the average salary of their respective department.
+    SQL: SELECT * FROM emp_154 e WHERE sal > (SELECT AVG(sal) FROM emp_154 WHERE deptno = e.deptno);
+
+46. Retrieve all details of employees whose salary is greater than the average salary of employees hired before April 1, 1981.
+    SQL: SELECT * FROM emp_154 e WHERE sal > (SELECT AVG(sal) FROM emp_154 WHERE hiredate < DATE '1981-04-01');
