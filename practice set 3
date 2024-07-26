@@ -1,0 +1,266 @@
+CREATE TABLE Client_master(
+    client_no VARCHAR2(6) PRIMARY KEY CHECK (client_no LIKE 'C%'),
+    name varchar2(20) NOT NULL,
+    address1 varchar2(30),
+    address2 varchar2(30),
+    city varchar2(15),
+    state varchar2(15),
+    pincode number(8),
+    bal_due number(10,2)
+);
+INSERT INTO client_master (client_no, name, city, pincode, state, bal_due)
+VALUES ('C00001', 'Ivan Bayross', 'Bombay', '400054', 'Maharashtra', 15000);
+
+INSERT INTO client_master (client_no, name, city, pincode, state, bal_due)
+VALUES ('C00002', 'Vandana Saitwal', 'Madras', '780001', 'Tamil Nadu', 0);
+
+INSERT INTO client_master (client_no, name, city, pincode, state, bal_due)
+VALUES ('C00003', 'Pramada Jaguste', 'Bombay', '400057', 'Maharashtra', 5000);
+
+INSERT INTO client_master (client_no, name, city, pincode, state, bal_due)
+VALUES ('C00004', 'Basu Navindgi', 'Bombay', '400056', 'Maharashtra', 0);
+
+INSERT INTO client_master (client_no, name, city, pincode, state, bal_due)
+VALUES ('C00005', 'Ravi Sreedharan', 'Delhi', '100001', 'Delhi', 2000);
+
+INSERT INTO client_master (client_no, name, city, pincode, state, bal_due)
+VALUES ('C00006', 'Rukmini', 'Bombay', '400050', 'Maharashtra', 0);
+
+Drop table product_master;
+Drop table sales_order_details;
+CREATE TABLE product_master (
+    product_no VARCHAR2(6) PRIMARY KEY CHECK (product_no LIKE 'P%'),
+    description VARCHAR2(50) NOT NULL,
+    profit_percent NUMBER(4,2) NOT NULL,
+    unit_measure VARCHAR2(10) NOT NULL,
+    qty_on_hand NUMBER(8) NOT NULL,
+    reorder_lvl NUMBER(8) NOT NULL,
+    sell_price NUMBER(8,2) NOT NULL CHECK (sell_price <> 0),
+    cost_price NUMBER(8,2) NOT NULL CHECK (cost_price <> 0)
+);
+INSERT INTO product_master
+VALUES ('P00001', '1.44 Floppies', 5, 'Piece', 100, 20, 525, 500);
+ 
+INSERT INTO product_master
+VALUES ('P03453', 'Monitors', 6, 'Piece', 10, 3, 12000, 11280);
+ 
+INSERT INTO product_master
+VALUES ('P06734', 'Mouse', 5, 'Piece', 20, 5, 1050, 1000);
+ 
+INSERT INTO product_master 
+VALUES ('P07865', '1.22 Floppies', 5, 'Piece', 100, 20, 525, 500);
+ 
+INSERT INTO product_master
+VALUES ('P07868', 'Keyboards', 2, 'Piece', 10, 3, 3150, 3050);
+ 
+INSERT INTO product_master
+VALUES ('P07885', 'CD Drive', 2.5, 'Piece', 10, 3, 5250, 5100);
+ 
+INSERT INTO product_master
+VALUES ('P07965', '540 HDD', 4, 'Piece', 10, 3, 8400, 8000);
+ 
+INSERT INTO product_master 
+VALUES ('P07975', '1.44 Drive', 5, 'Piece', 10, 3, 1050, 1000);
+ 
+INSERT INTO product_master 
+VALUES ('P08865', '1.22 Drive', 5, 'Piece', 2, 3, 1050, 1000);
+
+CREATE TABLE salesman_master (
+    salesman_no VARCHAR2(6) PRIMARY KEY CHECK (salesman_no LIKE 'S%'),
+    salesman_name varchar2(20) NOT NULL,
+    address1 varchar2(30) NOT NULL,
+    address2 varchar2(30),
+    city varchar2(20),
+    pincode varchar2(8),
+    state varchar2(20),
+    sal_amt Number(8,2) NOT NULL CHECK (sal_amt <> 0),
+    tgt_to_get Number(6,2) NOT NULL CHECK (tgt_to_get <> 0),
+    ytd_sales Number(6,2) NOT NULL,
+    remarks varchar2(60)
+);
+INSERT INTO salesman_master (salesman_no, salesman_name, address1, address2, city, pincode, state, sal_amt, tgt_to_get, ytd_sales, remarks)
+VALUES ('S00001', 'Kirar', 'A/14', 'Worli', 'Bombay', '400002', 'Maharashtra', 3000, 100, 50, 'Good');
+
+INSERT INTO salesman_master (salesman_no, salesman_name, address1, address2, city, pincode, state, sal_amt, tgt_to_get, ytd_sales, remarks)
+VALUES ('S00002', 'Manish', '65', 'Nariman', 'Bombay', '400001', 'Maharashtra', 3000, 200, 100, 'Good');
+
+INSERT INTO salesman_master (salesman_no, salesman_name, address1, address2, city, pincode, state, sal_amt, tgt_to_get, ytd_sales, remarks)
+VALUES ('S00003', 'Ravi', 'P-7', 'Bandra', 'Bombay', '400032', 'Maharashtra', 3000, 200, 100, 'Good');
+
+INSERT INTO salesman_master (salesman_no, salesman_name, address1, address2, city, pincode, state, sal_amt, tgt_to_get, ytd_sales, remarks)
+VALUES ('S00004', 'Ashish', 'A/5', 'Juhu', 'Bombay', '400044', 'Maharashtra', 3500, 200, 150, 'Good');
+
+CREATE TABLE sales_order (
+    order_no VARCHAR2(6) PRIMARY KEY CHECK (order_no LIKE 'O%'),
+    order_date DATE,
+    client_no VARCHAR2(6),
+    dely_addr VARCHAR2(25),
+    salesman_no VARCHAR2(6),
+    dely_type CHAR(1) DEFAULT 'F' CHECK (dely_type IN ('P', 'F')),
+    billed_yn CHAR(1),
+    dely_date DATE,
+    order_status VARCHAR2(10) CHECK (order_status IN ('In Process', 'Fulfilled', 'BackOrder', 'Cancelled')),
+    FOREIGN KEY (client_no) REFERENCES Client_master(client_no),
+    FOREIGN KEY (salesman_no) REFERENCES salesman_master(salesman_no)
+);
+CREATE OR REPLACE TRIGGER check_dely_date
+BEFORE INSERT OR UPDATE ON sales_order
+FOR EACH ROW
+BEGIN
+    IF :NEW.dely_date < :NEW.order_date THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Delivery date cannot be less than order date');
+    END IF;
+END;
+INSERT INTO sales_order (order_no, order_date, client_no, dely_type, billed_yn, salesman_no, dely_date, order_status)
+VALUES ('O19001', TO_DATE('12-Jan-96', 'DD-Mon-YY'), 'C00001', 'F', 'N', 'S00001', TO_DATE('20-Jan-96', 'DD-Mon-YY'), 'In Process');
+
+INSERT INTO sales_order (order_no, order_date, client_no, dely_type, billed_yn, salesman_no, dely_date, order_status)
+VALUES ('O19002', TO_DATE('25-Jan-96', 'DD-Mon-YY'), 'C00002', 'P', 'N', 'S00002', TO_DATE('27-Jan-96', 'DD-Mon-YY'), 'Cancelled');
+
+INSERT INTO sales_order (order_no, order_date, client_no, dely_type, billed_yn, salesman_no, dely_date, order_status)
+VALUES ('O46865', TO_DATE('18-Feb-96', 'DD-Mon-YY'), 'C00003', 'F', 'Y', 'S00003', TO_DATE('20-Feb-96', 'DD-Mon-YY'), 'Fulfilled');
+
+INSERT INTO sales_order (order_no, order_date, client_no, dely_type, billed_yn, salesman_no, dely_date, order_status)
+VALUES ('O19003', TO_DATE('03-Apr-96', 'DD-Mon-YY'), 'C00001', 'F', 'Y', 'S00001', TO_DATE('07-Apr-96', 'DD-Mon-YY'), 'Fulfilled');
+
+INSERT INTO sales_order (order_no, order_date, client_no, dely_type, billed_yn, salesman_no, dely_date, order_status)
+VALUES ('O46866', TO_DATE('20-May-96', 'DD-Mon-YY'), 'C00004', 'P', 'N', 'S00002', TO_DATE('22-May-96', 'DD-Mon-YY'), 'Cancelled');
+
+INSERT INTO sales_order (order_no, order_date, client_no, dely_type, billed_yn, salesman_no, dely_date, order_status)
+VALUES ('O19008', TO_DATE('24-May-96', 'DD-Mon-YY'), 'C00005', 'F', 'N', 'S00004', TO_DATE('26-May-96', 'DD-Mon-YY'), 'In Process');
+
+CREATE TABLE sales_order_details (
+    order_no VARCHAR2(6),
+    product_no VARCHAR2(6),
+    qty_ordered NUMBER(8),
+    qty_disp NUMBER(8),
+    product_rate NUMBER(10,2),
+    PRIMARY KEY (order_no, product_no),
+    FOREIGN KEY (order_no) REFERENCES sales_order(order_no),
+    FOREIGN KEY (product_no) REFERENCES product_master(product_no)
+);
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O19001', 'P00001', 4, 4, 525);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O19001', 'P07965', 2, 1, 8400);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O19001', 'P07885', 2, 1, 5250);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O19002', 'P00001', 10, 0, 525);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O46865', 'P07868', 3, 3, 3150);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O46865', 'P07885', 3, 1, 5250);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O46865', 'P00001', 10, 10, 525);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O46865', 'P03453', 4, 4, 1050);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O19003', 'P03453', 2, 2, 1050);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O19003', 'P06734', 1, 1, 12000);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O46866', 'P07965', 1, 0, 8400);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O46866', 'P07975', 1, 0, 1050);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O19008', 'P00001', 10, 5, 525);
+
+INSERT INTO sales_order_details (order_no, product_no, qty_ordered, qty_disp, product_rate)
+VALUES ('O19008', 'P07975', 5, 3, 1050);
+
+SELECT * FROM sales_order_details;
+
+-- experiment 6 queries
+-- a) Find out the names of all the clients.
+SELECT Name FROM Client_Master;
+-- b) Retrieve the enre contents of the Client_Master table.
+SELECT * FROM Client_Master;
+-- c) Retrieve the list of names, city and the sate of all the clients.
+SELECT Name, City, State FROM Client_Master;
+-- d) List the various products available from the Product_Master table.
+SELECT Description FROM Product_Master;
+-- e) List all the clients who are located in Bombay.
+SELECT * FROM Client_Master WHERE City='Bombay';
+-- f) Find the names of salesmen who have a salary equal to Rs.3000.
+SELECT Salesman_name FROM Salesman_Master WHERE Sal_Amt=3000;
+
+-- udating queries
+-- a) Change the city of ClientNo ‘C00005’ to ‘Bangalore’
+update client_master set City = 'Bangalore' where Client_No = 'C00005';
+-- b) Change the BalDue of ClientNo ‘C00001’ to Rs.1000
+update client_master set Bal_Due = 1000 where Client_No = 'C00001';
+-- c) Change the cost price of ‘Trousers’ to Rs.950.00.
+update product_master set CostPrice = 950 where Name = 'Trousers';
+-- d) Change the city of the salesman to Pune.
+update salesman_master set City = 'Pune';
+-- deleted queries
+-- a) Delete all the salesmen from the Salesman_Master whose salaries are equal to 3500.
+delete from salesman_master where Sal_Amt = 3500;
+-- b) Delete all products from Product_Master where the QtyOnHand is equal to 100.
+delete from product_master where QTY_ON_HAND = 100;
+-- c) Delete from Client where the column state =’Maharashtra’.
+delete from client_master where State = 'Tamil Nadu';
+
+
+-- alter queries
+-- d) Add a column called ‘Telephone’ of data type ‘number’ and size ‘10’ to the Client_Master table
+alter table client_master add Telephone int;
+-- e) Change the size ODF SellPrice column Product_Master to 10,2
+ALTER TABLE Product_Master MODIFY (Sell_Price number(10,2));
+select * from product_master;
+
+-- destroy queries
+-- f) Destroy table Client_Master along with its data.
+drop table client_master;
+
+-- rename queries
+-- g) Change the name of the Salesman_Master to sman_mast
+alter table salesman_master rename to sman_mast;
+
+
+
+-- experiment 7 view queries
+CREATE VIEW CLIENT_V1 AS
+SELECT client_no, name, city, pincode, state, bal_due
+FROM client_master;
+ 
+ 
+CREATE VIEW SALESMAN_V1 AS
+SELECT salesman_no, salesman_name, address1 || ', ' || address2 || ', ' || city AS address, sal_amt
+FROM salesman_master
+WHERE tgt_to_get > 50000;
+
+ 
+CREATE VIEW ORDERS AS
+SELECT so.order_no, so.order_date, so.order_status, so.client_no, cm.name AS client_name, so.salesman_no, sm.salesman_name,
+       sod.product_no, pm.description AS product_description, sod.product_rate AS product_price,
+       sod.qty_ordered, sod.qty_disp
+FROM sales_order so
+JOIN client_master cm ON so.client_no = cm.client_no
+JOIN salesman_master sm ON so.salesman_no = sm.salesman_no
+JOIN sales_order_details sod ON so.order_no = sod.order_no
+JOIN product_master pm ON sod.product_no = pm.product_no;
+ 
+ 
+CREATE TABLE COPY_PRODUCT_MASTER AS
+SELECT *
+FROM product_master
+WHERE 1=0; 
+ 
+INSERT INTO COPY_PRODUCT_MASTER
+SELECT *
+FROM product_master
+WHERE sell_price > 2000;
