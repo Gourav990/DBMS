@@ -1,0 +1,129 @@
+CREATE TABLE dept_class154(
+    DEPTNO NUMBER primary key,
+    DNAME varchar(15) NOT NULL,
+    LOC varchar(15)
+);
+
+desc dept_class154;
+
+INSERT INTO dept_class154 VALUES (10, 'ACCOUNTING','NEW YORK');
+INSERT INTO dept_class154 VALUES (20,'RESEARCH','DALLAS');
+INSERT INTO dept_class154 VALUES (30,'SALES','CHICAGO');
+INSERT INTO dept_class154 VALUES (40,'OPERATIONS','BOSTON');
+
+SELECT * FROM dept_class154;
+
+CREATE TABLE EMP_154(
+    EMNO NUMBER primary key,
+    EMNAME varchar(15) NOT NULL,
+    JOB varchar(15),
+    MGR NUMBER,
+    HIREDATE DATE,
+    SAL NUMBER NOT NULL,
+    CIMM NUMBER,
+    DEPTNO NUMBER REFERENCES DEPT_CLASS154
+);
+
+desc EMP_154;
+
+INSERT INTO EMP_154 VALUES (7839,'KING', 'PRESIDENT','','NOV-17-81',5000,'', 10);
+INSERT INTO EMP_154 VALUES (7698,'BLAKE', 'MANAGER',7839,'MAY-01-81',2850,'', 30);
+INSERT INTO EMP_154 VALUES (7782,'CLARK', 'MANAGER',7839,'JUN-09-81',2450,'', 10);
+INSERT INTO EMP_154 VALUES (7566,'JONES', 'MANAGER',7839,'APR-19-81',2975,'', 20);
+INSERT INTO EMP_154 VALUES (7788,'SCOTT', 'ANALYST',7766,'APR-19-87',3000,'', 20);
+INSERT INTO EMP_154 VALUES (7902,'FORD', 'ANALYST',7566,'DEC-17-81',3000,'', 20);
+INSERT INTO EMP_154 VALUES (7369,'SMITH', 'CLERK',7902,'DEC-20-80',800,'', 20);
+INSERT INTO EMP_154 VALUES (7499,'ALLEN', 'SALESMAN',7698,'FEB-20-81',1600,300, 30);
+INSERT INTO EMP_154 VALUES (7521,'WARD', 'SALESMAN',7698,'FEB-22-81',1250,500, 30);
+INSERT INTO EMP_154 VALUES (7654,'MARTIN', 'SALESMAN',7698,'SEP-28-81',1250,1400, 30);
+INSERT INTO EMP_154 VALUES (7844,'TURNER', 'SALESMAN',7698,'SEP-08-81',1500,0, 30);
+INSERT INTO EMP_154 VALUES (7876,'ADMS', 'CLERK',7688,'MAY-23-87',1100,'', 20);
+INSERT INTO EMP_154 VALUES (7900,'JAMES', 'CLERK',7698,'DEC-03-81',950,'', 30);
+INSERT INTO EMP_154 VALUES (7934,'MILLER', 'CLERK',7782,'JAN-23-82',1300,'', 10);
+
+1. Retrieve the names and salaries of employees who earn more than 1000.
+   SQL: SELECT EMNAME, SAL FROM EMP_154 WHERE SAL > 1000;
+
+2. Retrieve the department numbers and job titles for employees who work in department 20 and are clerks.
+   SQL: SELECT DEPTNO, JOB FROM EMP_154 WHERE DEPTNO = 20 AND JOB = 'CLERK';
+
+3. Retrieve the names and job titles of employees whose jobs are either 'ANALYST' or 'SALESMAN'.
+   SQL: SELECT EMNAME, JOB FROM EMP_154 WHERE JOB IN ('ANALYST', 'SALESMAN');
+
+4. Retrieve the names and job titles of employees whose job title is not 'MANAGER'.
+   SQL: SELECT EMNAME, JOB FROM EMP_154 WHERE JOB != 'MANAGER';
+
+5. Retrieve all details of employees who were hired before September 28, 1981.
+   SQL: SELECT * FROM EMP_154 WHERE HIREDATE < TO_DATE('28-SEP-81', 'DD-MON-YY');
+
+6. Retrieve the names and employee numbers of employees whose employee numbers are 7369, 7521, 7566, or 7782.
+   SQL: SELECT EMNAME, EMNO FROM EMP_154 WHERE EMNO IN (7369, 7521, 7566, 7782);
+
+7. Retrieve the names and department numbers of employees who do not work in departments 10 or 20.
+   SQL: SELECT EMNAME, DEPTNO FROM EMP_154 WHERE DEPTNO NOT IN (10, 20);
+
+8. Retrieve the names and salaries of employees who earn between 1000 and 2000.
+   SQL: SELECT EMNAME, SAL FROM EMP_154 WHERE SAL BETWEEN 1000 AND 2000;
+
+9. Retrieve a list of distinct job titles.
+   SQL: SELECT DISTINCT JOB FROM EMP_154;
+
+10. Retrieve all details of employees where the 'CIMM' column is NULL.
+    SQL: SELECT * FROM EMP_154 WHERE CIMM IS NULL;
+
+11. Retrieve all details of employees where the 'CIMM' column is not NULL.
+    SQL: SELECT * FROM EMP_154 WHERE CIMM IS NOT NULL;
+
+12. Retrieve all details of employees where the 'CIMM' column is NULL and their salary is greater than 2000.
+    SQL: SELECT * FROM EMP_154 WHERE CIMM IS NULL AND SAL > 2000;
+
+13. Retrieve all details of employees whose names start with 'S'.
+    SQL: SELECT * FROM EMP_154 WHERE EMNAME LIKE 'S%';
+
+14. Retrieve all details of employees whose names have 'I' as the second character.
+    SQL: SELECT * FROM EMP_154 WHERE EMNAME LIKE '_I%';
+
+15. Retrieve the names, salaries, and 15% of the salaries of all employees.
+    SQL: SELECT EMNAME, SAL, SAL * 0.15 FROM EMP_154;
+
+16. Retrieve the employee numbers, names, and salaries of all employees, ordered by salary in ascending order.
+    SQL: SELECT EMNO, EMNAME, SAL FROM EMP_154 ORDER BY SAL ASC;
+
+17. Retrieve the names and hire dates of all employees, ordered by hire date in descending order.
+    SQL: SELECT EMNAME, HIREDATE FROM EMP_154 ORDER BY HIREDATE DESC;
+
+18. Retrieve the names, salaries, job titles, and department numbers of all employees, ordered by department number in ascending order and salary in descending order.
+    SQL: SELECT EMNAME, SAL, JOB, DEPTNO FROM EMP_154 ORDER BY DEPTNO ASC, SAL DESC;
+
+19. Retrieve the total number of employees.
+    SQL: SELECT COUNT(*) FROM EMP_154;
+
+20. Retrieve the total number of distinct job titles.
+    SQL: SELECT COUNT(DISTINCT JOB) FROM EMP_154;
+
+21. Retrieve the total sum of all employees' salaries.
+    SQL: SELECT SUM(SAL) AS TOTAL FROM EMP_154;
+
+22. Retrieve the maximum salary of employees who have the job title 'SALESMAN'.
+    SQL: SELECT MAX(SAL) AS SALESMAN FROM EMP_154 WHERE JOB = 'SALESMAN';
+
+23. Retrieve the minimum salary of all employees.
+    SQL: SELECT MIN(SAL) FROM EMP_154;
+
+24. Retrieve the average salary and the total number of employees in department 20.
+    SQL: SELECT AVG(SAL), COUNT(*) FROM EMP_154 WHERE DEPTNO = 20;
+
+25. Retrieve the department number and the total number of employees in each department.
+    SQL: SELECT DEPTNO, COUNT(*) FROM EMP_154 GROUP BY DEPTNO;
+
+26. Retrieve the job titles and the number of employees in each job, ordered by the number of employees in descending order.
+    SQL: SELECT JOB, COUNT(JOB) AS NO_OF_EMP FROM EMP_154 GROUP BY JOB ORDER BY NO_OF_EMP DESC;
+
+27. Retrieve the job titles, maximum salary, minimum salary, and total salary for each job title.
+    SQL: SELECT JOB, MAX(SAL) AS MAX_SAL, MIN(SAL) AS MIN_SAL, SUM(SAL) AS TOTAL FROM EMP_154 GROUP BY JOB;
+
+28. Retrieve the department numbers, average salary, and total number of employees for departments having more than 3 employees.
+    SQL: SELECT DEPTNO, AVG(SAL), COUNT(*) FROM EMP_154 GROUP BY DEPTNO HAVING COUNT(*) > 3;
+
+29. Retrieve the job titles and the maximum salary for each job title where the maximum salary is greater than or equal to 1000.
+    SQL: SELECT JOB, MAX(SAL) FROM EMP_154 GROUP BY JOB HAVING MAX(SAL) >= 1000;
